@@ -1,0 +1,10 @@
+.env
+.venv/
+venv/
+.flaskenv
+.vscode
+__pycache__
+data.db
+instance/
+*.pyc
+.DS_Store
