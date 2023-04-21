@@ -8,3 +8,5 @@ data.db
 instance/
 *.pyc
 .DS_Store
+bd.xlsx
+import_excel.py

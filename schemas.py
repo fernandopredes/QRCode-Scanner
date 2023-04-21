@@ -10,6 +10,7 @@ class UserSchema(Schema):
         description = "Define a estrutura de um usuário"
 
 class PatrimonySchema(Schema):
+    id = fields.Integer(dump_only=True)
     number = fields.Integer(required=True, validate=validate.Range(max=99999999))
     airport = fields.String(required=True, validate=validate.Length(max=50))
     description = fields.String(validate=validate.Length(max=255))

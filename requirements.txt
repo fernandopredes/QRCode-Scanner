@@ -8,3 +8,5 @@ passlib
 blocklist
 flask-cors
 requests
+pandas
+openpyxl
