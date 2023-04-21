@@ -9,3 +9,5 @@ class PatrimonyModel(db.Model):
     description = db.Column(db.String(255), nullable=False)
     price = db.Column(db.Float(precision=2), nullable=False)
     responsible = db.Column(db.String(50), nullable=False)
+    registry = db.Column(db.String(7), nullable=False)
+    verified = db.Column(db.Boolean, nullable=False, default=False)

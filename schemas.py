@@ -15,6 +15,7 @@ class PatrimonySchema(Schema):
     description = fields.String(validate=validate.Length(max=255))
     price = fields.Float(required=True)
     responsible = fields.String(required=True, validate=validate.Length(max=50))
+    registry = fields.String(required=True, validate=[validate.Length(max=7), validate.Regexp(r'^\d{1,7}$')])
 
 
 class UserLoginSchema(Schema):
@@ -46,12 +47,3 @@ class UserTokenSchema(Schema):
 
     class Meta:
         description = "Esquema para resposta da rota de login do usuário"
-
-
-class ScannedPatrimonySchema(Schema):
-    user_id = fields.Integer(required=True)
-    patrimony_id = fields.Integer(required=True)
-    timestamp = fields.DateTime()
-
-    # Para incluir informações do patrimônio relacionado no esquema:
-    patrimony = fields.Nested(PatrimonySchema, only=("number", "airport", "description", "price", "responsible"))

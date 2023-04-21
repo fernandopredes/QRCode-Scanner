@@ -18,17 +18,18 @@ class UserRegister(MethodView):
         """ Rota para registrar um usuário.
         Retorna uma mensagem confirmando que o usuário foi criado.
         """
-        if UserModel.query.filter(UserModel.name == user_data["name"]).first():
-            abort(409, message="Já existe um usuário com esse nome.")
+        print(len(user_data["registry"]))
+        if UserModel.query.filter(UserModel.registry == user_data["registry"]).first():
+            abort(409, message="Já existe um usuário com essa matricula.")
 
-        if UserModel.query.filter(UserModel.email == user_data["email"]).first():
-            abort(409, message="Já existe um usuário com esse e-mail.")
+        if len(user_data["registry"]) != 7:
+            abort(409, message="A matricula deve ter 7 números")
+
 
         user = UserModel(
             name = user_data["name"],
-            email = user_data["email"],
             password = pbkdf2_sha256.hash(user_data["password"]),
-            amount=user_data["amount"]
+            registry = user_data["registry"]
         )
         db.session.add(user)
         db.session.commit()
@@ -44,7 +45,7 @@ class UserLogin(MethodView):
         Retorna o id do usuário e gera um token de acesso.
         """
         user = UserModel.query.filter(
-            UserModel.email == user_data['email']
+            UserModel.registry == user_data['registry']
         ).first()
 
         if user and pbkdf2_sha256.verify(user_data['password'], user.password):
