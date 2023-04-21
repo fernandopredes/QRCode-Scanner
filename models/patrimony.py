@@ -11,3 +11,6 @@ class PatrimonyModel(db.Model):
     responsible = db.Column(db.String(50), nullable=False)
     registry = db.Column(db.String(7), nullable=False)
     verified = db.Column(db.Boolean, nullable=False, default=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("UserModel")

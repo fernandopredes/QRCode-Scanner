@@ -7,3 +7,5 @@ class UserModel(db.Model):
     name = db.Column(db.String(100), nullable=False)
     registry = db.Column(db.String(7), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
+
+    patrimonies = db.relationship("PatrimonyModel", backref="users")

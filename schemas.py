@@ -16,7 +16,10 @@ class PatrimonySchema(Schema):
     price = fields.Float(required=True)
     responsible = fields.String(required=True, validate=validate.Length(max=50))
     registry = fields.String(required=True, validate=[validate.Length(max=7), validate.Regexp(r'^\d{1,7}$')])
+    verified = fields.Boolean(required=False)
 
+
+patrimony_schema = PatrimonySchema()
 
 class UserLoginSchema(Schema):
     """
