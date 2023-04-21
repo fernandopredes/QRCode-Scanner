@@ -10,15 +10,13 @@ from flask_cors import CORS
 from db import db
 import models
 
-""" from resources.user import blp as UserBlueprint """
-
-
+from resources.user import blp as UserBlueprint
 
 def create_app(db_url=None):
     app = Flask(__name__)
     load_dotenv()
 
-    app.config["API_TITLE"] = "MarTech REST API"
+    app.config["API_TITLE"] = "Patrimonio REST API"
     app.config["API_VERSION"] = "v1"
     app.config["OPENAPI_VERSION"] = "3.0.3"
     app.config["OPENAPI_URL_PREFIX"] = "/"
@@ -107,7 +105,7 @@ def create_app(db_url=None):
     with app.app_context():
         db.create_all()
 
-    """ api.register_blueprint(UserBlueprint) """
+    api.register_blueprint(UserBlueprint)
 
 
     if __name__ == "__main__":

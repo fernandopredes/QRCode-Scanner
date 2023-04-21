@@ -1,8 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
+from db import db
 
-db = SQLAlchemy()
+class PatrimonyModel(db.Model):
+    __tablename__ = 'patrimony'
 
-class Patrimony(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.Integer, nullable=False)
     airport = db.Column(db.String(50), nullable=False)
