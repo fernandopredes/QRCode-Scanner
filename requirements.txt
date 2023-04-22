@@ -10,3 +10,4 @@ flask-cors
 requests
 pandas
 openpyxl
+psycopg2-binary>=2.8,<3.0
