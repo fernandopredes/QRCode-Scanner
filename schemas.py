@@ -51,3 +51,8 @@ class UserTokenSchema(Schema):
 
     class Meta:
         description = "Esquema para resposta da rota de login do usuário"
+
+from marshmallow import Schema, fields
+
+class SearchArgsSchema(Schema):
+    responsible = fields.Str(required=True, description="Responsável pelos patrimônios a serem pesquisados")
