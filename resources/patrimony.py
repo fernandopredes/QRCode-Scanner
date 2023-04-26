@@ -1,6 +1,9 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
+from flask import request, jsonify
+from schemas import PaginationSchema, AirportSchema, AirportDetailsArgs
+from marshmallow import fields
 
 
 from db import db
@@ -16,6 +19,33 @@ class Patrimonies(MethodView):
         """ Rota para listar todos os patrimônios."""
         patrimonies = PatrimonyModel.query.all()
         return patrimony_schema.dump(patrimonies, many=True)
+
+@blp.route("/airports")
+class Airports(MethodView):
+    @blp.response(200, AirportSchema(many=True), description="Sucesso. Retorna uma lista de todos os aeroportos.")
+    def get(self):
+        """ Rota para listar todos os nomes dos aeroportos."""
+        airport_names = PatrimonyModel.query.filter(PatrimonyModel.airport != '').with_entities(PatrimonyModel.airport).distinct().all()
+        airport_schema = AirportSchema(many=True)
+        return airport_schema.dump(airport_names)
+
+@blp.route("/airport_details")
+class AirportDetails(MethodView):
+    @blp.arguments(Schema.from_dict({"airport": fields.String(required=True), "page": fields.Integer(), "items_per_page": fields.Integer()}), location="query")
+    @blp.response(200, PatrimonySchema(many=True), description="Sucesso. Retorna uma lista de todos os patrimônios relacionados ao aeroporto especificado.")
+    def get(self, args):
+        """ Rota para listar todos os patrimônios relacionados ao aeroporto especificado."""
+        airport = args["airport"]
+        page = args.get("page", 1)
+        items_per_page = args.get("items_per_page")
+
+        if items_per_page:
+            patrimonies = PatrimonyModel.query.filter(PatrimonyModel.airport == airport).paginate(page=page, per_page=items_per_page, error_out=False)
+            return patrimony_schema.dump(patrimonies.items, many=True)
+        else:
+            patrimonies = PatrimonyModel.query.filter(PatrimonyModel.airport == airport).all()
+            return patrimony_schema.dump(patrimonies, many=True)
+
 
 @blp.route("/search/<string:patrimony_number>")
 class SearchPatrimony(MethodView):
@@ -43,17 +73,28 @@ class SearchPatrimony(MethodView):
 @blp.route("/my-patrimonies")
 class MyPatrimonies(MethodView):
     @jwt_required()
+    @blp.arguments(PaginationSchema, location="query", as_kwargs=True)
     @blp.response(200, PatrimonySchema(many=True), description="Sucesso. Retorna uma lista de patrimônios relacionados ao usuário.")
-    def get(self):
+    def get(self, **kwargs):
         """ Rota para listar patrimônios relacionados ao usuário atual."""
         jwt_payload = get_jwt()
         user_id = jwt_payload["sub"]
+
+        # Adicione uma variável page que obtém o valor do parâmetro de consulta 'page' ou usa None por padrão
+        page = request.args.get('page', None)
+        if page is not None:
+            page = int(page)
 
         user = UserModel.query.get(user_id)
         if not user:
             abort(404, description="Usuário não encontrado.")
 
-        patrimonies = PatrimonyModel.query.filter_by(registry=user.registry).all()
+        patrimonies_query = PatrimonyModel.query.filter_by(registry=user.registry)
+
+        if page is not None:
+            patrimonies_query = patrimonies_query.limit(10).offset(10 * (page - 1))
+
+        patrimonies = patrimonies_query.all()
         return patrimony_schema.dump(patrimonies, many=True)
 
 

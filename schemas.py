@@ -52,7 +52,16 @@ class UserTokenSchema(Schema):
     class Meta:
         description = "Esquema para resposta da rota de login do usuário"
 
-from marshmallow import Schema, fields
 
 class SearchArgsSchema(Schema):
     responsible = fields.Str(required=True, description="Responsável pelos patrimônios a serem pesquisados")
+
+class PaginationSchema(Schema):
+    page = fields.Integer(required=False, description="Número da página atual")
+
+class AirportSchema(Schema):
+    airport = fields.String()
+
+class AirportDetailsArgs(Schema):
+    airport = fields.String(required=True)
+    page = fields.Integer(missing=0)
