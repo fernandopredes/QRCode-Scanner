@@ -9,5 +9,4 @@ instance/
 *.pyc
 .DS_Store
 bd.xlsx
-import_excel.py
-excel_import.py
+
