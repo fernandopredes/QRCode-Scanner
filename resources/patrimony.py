@@ -89,7 +89,7 @@ class MyPatrimonies(MethodView):
         if not user:
             abort(404, description="Usuário não encontrado.")
 
-        patrimonies_query = PatrimonyModel.query.filter_by(registry=user.registry)
+        patrimonies_query = PatrimonyModel.query.filter_by(registry=user.registry).order_by(PatrimonyModel.verified.desc())
 
         if page is not None:
             patrimonies_query = patrimonies_query.limit(10).offset(10 * (page - 1))
