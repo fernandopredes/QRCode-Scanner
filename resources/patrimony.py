@@ -31,19 +31,24 @@ class Airports(MethodView):
 
 @blp.route("/airport_details")
 class AirportDetails(MethodView):
-    @blp.arguments(Schema.from_dict({"airport": fields.String(required=True), "page": fields.Integer(), "items_per_page": fields.Integer()}), location="query")
+    @blp.arguments(Schema.from_dict({"airport": fields.String(required=True), "page": fields.Integer(), "items_per_page": fields.Integer(), "number": fields.String()}), location="query")
     @blp.response(200, PatrimonySchema(many=True), description="Sucesso. Retorna uma lista de todos os patrimônios relacionados ao aeroporto especificado.")
     def get(self, args):
         """ Rota para listar todos os patrimônios relacionados ao aeroporto especificado."""
         airport = args["airport"]
+        number = args.get("number")
         page = args.get("page", 1)
         items_per_page = args.get("items_per_page")
 
+        query = PatrimonyModel.query.filter(PatrimonyModel.airport == airport)
+        if number:
+            query = query.filter(PatrimonyModel.number == number)
+
         if items_per_page:
-            patrimonies = PatrimonyModel.query.filter(PatrimonyModel.airport == airport).paginate(page=page, per_page=items_per_page, error_out=False)
+            patrimonies = query.paginate(page=page, per_page=items_per_page, error_out=False)
             return patrimony_schema.dump(patrimonies.items, many=True)
         else:
-            patrimonies = PatrimonyModel.query.filter(PatrimonyModel.airport == airport).all()
+            patrimonies = query.all()
             return patrimony_schema.dump(patrimonies, many=True)
 
 
