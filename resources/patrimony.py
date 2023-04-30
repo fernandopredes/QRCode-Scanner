@@ -85,7 +85,7 @@ class MyPatrimonies(MethodView):
         jwt_payload = get_jwt()
         user_id = jwt_payload["sub"]
 
-        # Adicione uma variável page que obtém o valor do parâmetro de consulta 'page' ou usa None por padrão
+        # Adiciona uma variável page que obtém o valor do parâmetro de consulta 'page' ou usa None por padrão
         page = request.args.get('page', None)
         if page is not None:
             page = int(page)
@@ -103,19 +103,26 @@ class MyPatrimonies(MethodView):
         return patrimony_schema.dump(patrimonies, many=True)
 
 
-@blp.route("/patrimonies/<int:patrimony_id>")
+@blp.route("/patrimonies/<string:patrimony_number>")
 class PatrimonyResource(MethodView):
     #@jwt_required()
     @blp.arguments(PatrimonySchema(only=("verified",)), location="json")
-    @blp.response(200, PatrimonySchema, description="Sucesso. Retorna o patrimônio atualizado.")
-    def put(self, patrimony_data, patrimony_id):
-        """ Rota para atualizar o status verificado de um patrimônio existente pelo id."""
-        patrimony = PatrimonyModel.query.get_or_404(patrimony_id)
+    @blp.response(200, PatrimonySchema(many=True), description="Sucesso. Retorna os patrimônios atualizados.")
+    def put(self, patrimony_data, patrimony_number):
+        """ Rota para atualizar o status verificado de todos os patrimônios existentes com o mesmo número."""
+        patrimonies = PatrimonyModel.query.filter(PatrimonyModel.number == patrimony_number).all()
+
+        # Adicione esta linha para imprimir os resultados da consulta
+        print("Resultado da consulta:", patrimonies)
+
+        if not patrimonies:
+            abort(404, description="Nenhum patrimônio encontrado com o número fornecido.")
 
         if "verified" in patrimony_data:
-            patrimony.verified = patrimony_data["verified"]
+            for patrimony in patrimonies:
+                patrimony.verified = patrimony_data["verified"]
             db.session.commit()
         else:
             abort(400, description="O campo 'verified' é necessário.")
 
-        return patrimony_schema.dump(patrimony)
+        return patrimony_schema.dump(patrimonies, many=True)
