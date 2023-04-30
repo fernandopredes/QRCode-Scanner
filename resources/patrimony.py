@@ -70,8 +70,6 @@ class SearchPatrimony(MethodView):
         if not patrimony:
             abort(404, description="Patrimônio não encontrado.")
 
-        if patrimony.registry != user.registry:
-            abort(403, description="O patrimônio não está relacionado ao usuário logado.")
 
         return patrimony_schema.dump(patrimony)
 

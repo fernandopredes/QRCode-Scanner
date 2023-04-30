@@ -48,6 +48,7 @@ class UserTokenSchema(Schema):
     """
     access_token = fields.String(description="Token de acesso")
     user_id = fields.Int(description="Id do usuário")
+    user_registry = fields.Int(description="Matricula do usuário")
 
     class Meta:
         description = "Esquema para resposta da rota de login do usuário"
